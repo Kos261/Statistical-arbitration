@@ -1,0 +1,19 @@
+# Ignoruj środowisko
+.venv/
+venv/
+
+# Pliki środowiskowe
+.env
+*.lock
+
+# Pliki cache i build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+build/
+dist/
+
+# Pliki IDE
+.idea/
+.vscode/
