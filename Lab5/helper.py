@@ -2,7 +2,6 @@
 import numpy as np
 
 from sklearn.model_selection import cross_val_score, cross_val_predict, StratifiedKFold
-
 from sklearn.dummy import DummyClassifier
 from sklearn.svm import SVC
 from sklearn.naive_bayes import MultinomialNB
@@ -23,10 +22,10 @@ def get_models(use_dummy):
         ('svm', SVC()),
         ('naive bayes', MultinomialNB()),
         ('decision tree', DecisionTreeClassifier(max_depth=5)),
-        ('random forest', RandomForestClassifier(n_estimators=50, max_depth=5, random_state=0))
-        #('xgboost', xgb.XGBClassifier(n_estimators=50, max_depth=5, random_state=0)),
-        #('lightgbm', lgb.LGBMClassifier(n_estimators=50, max_depth=5, random_state=0)),
-        #('catboost', ctb.CatBoostClassifier(n_estimators=50, max_depth=5, random_state=0, verbose=0))
+        ('random forest', RandomForestClassifier(n_estimators=50, max_depth=5, random_state=0)),
+        ('xgboost', xgb.XGBClassifier(n_estimators=50, max_depth=5, random_state=0)),
+        ('lightgbm', lgb.LGBMClassifier(n_estimators=50, max_depth=5, random_state=0)),
+        ('catboost', ctb.CatBoostClassifier(n_estimators=50, max_depth=5, random_state=0, verbose=False))
     ]
     
     return models
@@ -58,21 +57,23 @@ def run_models(X, y, scoring, cv=3, plot_result=True, show_confusion_matrix=True
 
 
     for it, (model_name, model) in enumerate(get_models(use_dummy)):
-        scores = cross_val_score(model, X, y, cv=cv, scoring=scoring)
+        try:
+            scores = cross_val_score(model, X, y, cv=cv, scoring=scoring)
 
-        mean = np.around( np.mean(scores), 2)
-        std = np.around( np.std(scores), 2)
+            mean = np.around( np.mean(scores), 2)
+            std = np.around( np.std(scores), 2)
 
-        print("model={}, {}: mean={}, std={}".format(model_name, scoring, mean, std))
-        
-        result.append((model_name, mean, std))
-        
-    
-    
-        if show_confusion_matrix:
-            y_pred = cross_val_predict(model, X, y, cv=cv)
-            ax = axes[it // num_cols, it % num_cols]
-            plot_confusion_matrix(y, y_pred, ax=ax, title='model: {}'.format(model_name))
+            print("model={}, {}: mean={}, std={}".format(model_name, scoring, mean, std))
+
+            result.append((model_name, mean, std))
+
+            if show_confusion_matrix:
+                y_pred = cross_val_predict(model, X, y, cv=cv)
+                ax = axes[it // num_cols, it % num_cols]
+                plot_confusion_matrix(y, y_pred, ax=ax, title='model: {}'.format(model_name))
+
+        except Exception as e:
+            print(f"!! Model={model_name}, failed with error={e}")
             
     if show_confusion_matrix:
         plt.tight_layout()  
@@ -89,7 +90,7 @@ def use_vectorizer_and_run_models(text, y, vectorizer, vectorizer_kwargs, kwargs
     X = vec.fit_transform(text).toarray()
     
     if print_use_tokens:
-        tokens = vec.get_feature_names()
+        tokens = vec.get_feature_names_out()
         print("tokens #{}: {}".format(len(tokens), tokens) )
         
     
