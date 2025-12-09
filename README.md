@@ -17,3 +17,9 @@ real-world benchmarks, such as stock market indices.
  - IBM Cloud
  - Keras, Tensorflow, XGBoost, CatBoost
   
+### How to use
+install uv from https://docs.astral.sh/uv/
+
+in project directory use: ```uv sync``` to download libraries
+
+Enjoy!
