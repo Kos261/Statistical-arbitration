@@ -30,6 +30,8 @@ dependencies = [
     "xgboost>=3.1.1",
     "werkzeug==2.2.3",
     "scipy-stubs==1.16.3.2",
+    "statsmodels>=0.14.6",
+    "yfinance>=1.0",
 ]
 
 [tool.uv.sources]

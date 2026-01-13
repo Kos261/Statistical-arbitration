@@ -74,14 +74,14 @@ class PoissonProcessDecomposer:
         print(f"MAPE (Mean Abs Percentage Error): {mape:.2f}%")
         print(f"R² (Coefficient of Determination): {r2:.4f}")
 
-        # Wizualizacja dopasowania
-        plt.figure(figsize=(12, 6))
-        plt.plot(self.df['Date'], actual, label='Dane rzeczywiste', alpha=0.6)
-        plt.plot(self.df['Date'], predicted, label='Model (Fit)', color='red', alpha=0.8)
-        plt.title('Dopasowanie modelu dekompozycji')
-        plt.legend()
-        plt.grid(True, alpha=0.3)
-        plt.show()
+        # # Wizualizacja dopasowania
+        # plt.figure(figsize=(12, 6))
+        # plt.plot(self.df['Date'], actual, label='Dane rzeczywiste', alpha=0.6)
+        # plt.plot(self.df['Date'], predicted, label='Model (Fit)', color='red', alpha=0.8)
+        # plt.title('Dopasowanie modelu dekompozycji')
+        # plt.legend()
+        # plt.grid(True, alpha=0.3)
+        # plt.show()
 
     def estimate_trend(self):
         # Obliczanie trendu - regresja liniowa
@@ -191,8 +191,6 @@ class PoissonProcessDecomposer:
 
         self.lambda_estimated = predict_func
 
-
-
 if __name__ == '__main__':
     df = pd.read_csv('kolokwium-dane-0912.csv', sep=';')
     df['count'] = df['count'].values
@@ -202,3 +200,16 @@ if __name__ == '__main__':
     poiss = PoissonProcessDecomposer(df)
     poiss.fit()
     poiss.validate_fit()
+
+    future_days = 365
+    last_t = poiss.df['time_index'].max()
+    future_t = np.arange(last_t + 1, last_t + 1 + future_days)
+
+    forecast = poiss.lambda_estimated(future_t)
+
+    plt.figure(figsize=(12, 6))
+    plt.plot(df['Date'], df['count'], label='Historia')
+    plt.plot(pd.date_range('2021-01-01', periods=365), forecast, label='Prognoza', color='green')
+    plt.title("Prognoza na rok 2022")
+    plt.legend()
+    plt.show()
